@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Científico - Expansión del Universo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'Roboto', Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .paper-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 750px;
+            margin: 20px;
+            padding: 40px;
+            background-color: #ffffff;
+            border: 1px solid #000000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .meta-info {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 8px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-size: 14px;
+            font-weight: 700;
+            text-align: justify;
+            text-justify: inter-word;
+            color: #000000;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .box-scientific {
+            border: 1px dashed #000000;
+            padding: 16px;
+            margin-bottom: 24px;
+            background-color: #fafafa;
+        }
+
+        h4 {
+            font-size: 14px;
+            font-weight: 400;
+            text-align: justify;
+            text-justify: inter-word;
+            color: #000000;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 16px;
+        }
+
+        button {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            background-color: #ffffff;
+            color: #000000;
+            border: 1px solid #000000;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-bg"></canvas>
+
+    <div class="paper-container">
+        <div class="meta-info">
+            <span>PUBLICACIÓN COSMOLÓGICA</span>
+            <span>REF: GRAD-2023</span>
+        </div>
+
+        <div class="section-title">[ HIPÓTESIS PRINCIPAL ]</div>
+        <h1>Giovanni dice que el universo se expande porque estamos en un universo de gradientes verismo de un universo denso de espacio tiempo y como lanada no hay el objeto espacio tiempo prácticamente el gradiente se mueve hacia allá y eso es lo que percibimos como la espacio del universo</h1>
+
+        <div class="box-scientific">
+            <div class="section-title">[ MODELO ESTÁNDAR ]</div>
+            <h4> existe algo que los físicos llaman la energía oscura , y no sabe por que se expande el universo</h4>
+        </div>
+
+        <div class="controls">
+            <button onclick="simularGradiente()">EJECUTAR SIMULACIÓN DE GRADIENTE</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        let speedMultiplier = 1;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = width / 2;
+                this.y = height / 2;
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 1.5 + 0.2;
+                this.size = Math.random() * 2 + 1;
+                this.alpha = 0.8;
+            }
+
+            update() {
+                this.x += Math.cos(this.angle) * this.speed * speedMultiplier;
+                this.y += Math.sin(this.angle) * this.speed * speedMultiplier;
+                this.alpha -= 0.002 * speedMultiplier;
+
+                if (this.alpha <= 0 || this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 0, 0, ${this.alpha * 0.25})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 80; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            if (speedMultiplier > 1) {
+                speedMultiplier -= 0.02;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        function simularGradiente() {
+            speedMultiplier = 3.5;
+        }
+    </script>
+</body>
+</html>
